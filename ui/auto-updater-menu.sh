@@ -30,10 +30,11 @@ GITHUB_TOKEN_ELYTRA=""
 
 configure_panel_auto_updater() {
   print_header
-  print_flame "Panel Auto-Updater Configuration"
+  print_section "Panel Auto-Updater Configuration" "$GEAR"
 
-  output "The default Pyrodactyl Panel repository is:"
-  output "  ${COLOR_ORANGE}${DEFAULT_PANEL_REPO}${COLOR_NC}"
+  echo ""
+  output_info "The default Pyrodactyl Panel repository is:"
+  echo -e "     ${COLOR_ORANGE}${DEFAULT_PANEL_REPO}${COLOR_NC}"
   echo ""
 
   local use_default=""
@@ -41,17 +42,18 @@ configure_panel_auto_updater() {
 
   if [ "$use_default" == "y" ]; then
     PANEL_REPO="$DEFAULT_PANEL_REPO"
+    output_success "Using default repository: ${COLOR_ORANGE}${PANEL_REPO}${COLOR_NC}"
   else
     required_input PANEL_REPO "Enter the GitHub repository (format: owner/repo): " "Repository cannot be empty"
 
     if [[ ! "$PANEL_REPO" =~ ^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$ ]]; then
-      error "Invalid repository format. Must be 'owner/repo'"
+      output_error "Invalid repository format. Must be 'owner/repo'"
       exit 1
     fi
   fi
 
   echo ""
-  output "Repository: ${COLOR_ORANGE}${PANEL_REPO}${COLOR_NC}"
+  print_kv "Repository" "${PANEL_REPO}"
 
   # Only ask about private repo if not using default (default is public)
   if [ "$use_default" == "n" ]; then
@@ -61,21 +63,21 @@ configure_panel_auto_updater() {
 
     if [ "$PANEL_REPO_PRIVATE" == "true" ]; then
       echo ""
-      output "A GitHub Personal Access Token is required for private repositories."
-      output "Create one at: https://github.com/settings/tokens"
-      output "Required scopes: ${COLOR_ORANGE}repo${COLOR_NC}"
+      output_info "A GitHub Personal Access Token is required for private repositories."
+      output_info "Create one at: https://github.com/settings/tokens"
+      output_info "Required scopes: ${COLOR_ORANGE}repo${COLOR_NC}"
       echo ""
 
       local token_valid=false
       while [ "$token_valid" == false ]; do
         password_input GITHUB_TOKEN_PANEL "Enter your GitHub token: " "Token cannot be empty"
 
-        output "Validating token..."
+        output_info "Validating token..."
         if validate_github_token "$GITHUB_TOKEN_PANEL" "$PANEL_REPO"; then
-          success "Token validated successfully"
+          output_success "Token validated successfully"
           token_valid=true
         else
-          warning "Token validation failed. Please check your token and try again."
+          output_warning "Token validation failed. Please check your token and try again."
         fi
       done
     fi
@@ -83,17 +85,18 @@ configure_panel_auto_updater() {
     PANEL_REPO_PRIVATE="false"
   fi
 
-  output "Checking for releases in repository..."
+  echo ""
+  output_info "Checking for releases in repository..."
   if ! check_releases_exist "$PANEL_REPO" "$GITHUB_TOKEN_PANEL"; then
     echo ""
-    error "No releases found in repository: ${PANEL_REPO}"
-    warning "You must publish a release before using the auto-updater."
+    output_error "No releases found in repository: ${PANEL_REPO}"
+    output_warning "You must publish a release before using the auto-updater."
     exit 1
   fi
 
   local latest_release
   latest_release=$(get_latest_release "$PANEL_REPO" "$GITHUB_TOKEN_PANEL")
-  success "Found release: ${latest_release}"
+  output_success "Found release: ${latest_release}"
 
   export PANEL_REPO
   export PANEL_REPO_PRIVATE
@@ -106,10 +109,11 @@ configure_panel_auto_updater() {
 
 configure_elytra_auto_updater() {
   print_header
-  print_flame "Elytra Auto-Updater Configuration"
+  print_section "Elytra Auto-Updater Configuration" "$GEAR"
 
-  output "The default Elytra repository is:"
-  output "  ${COLOR_ORANGE}${DEFAULT_ELYTRA_REPO}${COLOR_NC}"
+  echo ""
+  output_info "The default Elytra repository is:"
+  echo -e "     ${COLOR_ORANGE}${DEFAULT_ELYTRA_REPO}${COLOR_NC}"
   echo ""
 
   local use_default=""
@@ -117,17 +121,18 @@ configure_elytra_auto_updater() {
 
   if [ "$use_default" == "y" ]; then
     ELYTRA_REPO="$DEFAULT_ELYTRA_REPO"
+    output_success "Using default repository: ${COLOR_ORANGE}${ELYTRA_REPO}${COLOR_NC}"
   else
     required_input ELYTRA_REPO "Enter the GitHub repository (format: owner/repo): " "Repository cannot be empty"
 
     if [[ ! "$ELYTRA_REPO" =~ ^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$ ]]; then
-      error "Invalid repository format. Must be 'owner/repo'"
+      output_error "Invalid repository format. Must be 'owner/repo'"
       exit 1
     fi
   fi
 
   echo ""
-  output "Repository: ${COLOR_ORANGE}${ELYTRA_REPO}${COLOR_NC}"
+  print_kv "Repository" "${ELYTRA_REPO}"
 
   # Only ask about private repo if not using default (default is public)
   if [ "$use_default" == "n" ]; then
@@ -137,21 +142,21 @@ configure_elytra_auto_updater() {
 
     if [ "$ELYTRA_REPO_PRIVATE" == "true" ]; then
       echo ""
-      output "A GitHub Personal Access Token is required for private repositories."
-      output "Create one at: https://github.com/settings/tokens"
-      output "Required scopes: ${COLOR_ORANGE}repo${COLOR_NC}"
+      output_info "A GitHub Personal Access Token is required for private repositories."
+      output_info "Create one at: https://github.com/settings/tokens"
+      output_info "Required scopes: ${COLOR_ORANGE}repo${COLOR_NC}"
       echo ""
 
       local token_valid=false
       while [ "$token_valid" == false ]; do
         password_input GITHUB_TOKEN_ELYTRA "Enter your GitHub token: " "Token cannot be empty"
 
-        output "Validating token..."
+        output_info "Validating token..."
         if validate_github_token "$GITHUB_TOKEN_ELYTRA" "$ELYTRA_REPO"; then
-          success "Token validated successfully"
+          output_success "Token validated successfully"
           token_valid=true
         else
-          warning "Token validation failed. Please check your token and try again."
+          output_warning "Token validation failed. Please check your token and try again."
         fi
       done
     fi
@@ -159,17 +164,18 @@ configure_elytra_auto_updater() {
     ELYTRA_REPO_PRIVATE="false"
   fi
 
-  output "Checking for releases in repository..."
+  echo ""
+  output_info "Checking for releases in repository..."
   if ! check_releases_exist "$ELYTRA_REPO" "$GITHUB_TOKEN_ELYTRA"; then
     echo ""
-    error "No releases found in repository: ${ELYTRA_REPO}"
-    warning "You must publish a release before using the auto-updater."
+    output_error "No releases found in repository: ${ELYTRA_REPO}"
+    output_warning "You must publish a release before using the auto-updater."
     exit 1
   fi
 
   local latest_release
   latest_release=$(get_latest_release "$ELYTRA_REPO" "$GITHUB_TOKEN_ELYTRA")
-  success "Found release: ${latest_release}"
+  output_success "Found release: ${latest_release}"
 
   export ELYTRA_REPO
   export ELYTRA_REPO_PRIVATE
@@ -182,24 +188,24 @@ configure_elytra_auto_updater() {
 
 configure_both_auto_updaters() {
   print_header
-  print_flame "Configure Both Auto-Updaters"
+  print_section "Configure Both Auto-Updaters" "$GEAR"
 
   configure_panel_auto_updater
 
   echo ""
-  output "Now configuring Elytra auto-updater..."
+  output_info "Now configuring Elytra auto-updater..."
   echo ""
 
   configure_elytra_auto_updater
 
-  success "Both auto-updaters installed successfully!"
+  output_success "Both auto-updaters installed successfully!"
 }
 
 # ------------------ Remove Menu ----------------- #
 
 show_remove_menu() {
   print_header
-  print_flame "Remove Auto-Updaters"
+  print_section "Remove Auto-Updaters" "$X_MARK"
 
   # Check what's installed
   local panel_updater_installed=false
@@ -214,86 +220,86 @@ show_remove_menu() {
   fi
 
   if [ "$panel_updater_installed" == false ] && [ "$elytra_updater_installed" == false ]; then
-    warning "No auto-updaters are currently installed."
+    output_warning "No auto-updaters are currently installed."
     echo ""
-    output "Press Enter to return to main menu..."
+    output_info "Press Enter to return to main menu..."
     read -r
     return
   fi
 
-  output "Which auto-updaters would you like to remove?"
+  output_highlight "Which auto-updaters would you like to remove?"
   echo ""
 
   if [ "$panel_updater_installed" == true ]; then
-    output "[${COLOR_ORANGE}0${COLOR_NC}] Panel auto-updater only"
+    print_menu_item "0" "Panel auto-updater only"
   fi
 
   if [ "$elytra_updater_installed" == true ]; then
-    output "[${COLOR_ORANGE}1${COLOR_NC}] Elytra auto-updater only"
+    print_menu_item "1" "Elytra auto-updater only"
   fi
 
   if [ "$panel_updater_installed" == true ] && [ "$elytra_updater_installed" == true ]; then
-    output "[${COLOR_ORANGE}2${COLOR_NC}] Both auto-updaters"
+    print_menu_item "2" "Both auto-updaters"
   fi
 
-  output "[${COLOR_ORANGE}3${COLOR_NC}] Cancel"
+  echo -e "  ${COLOR_GRAY}${BULLET} [3] Cancel${COLOR_NC}"
   echo ""
 
   local choice=""
   while true; do
-    echo -n "* Select option: "
+    echo -ne "  ${COLOR_GOLD}${ARROW_RIGHT}${COLOR_NC} ${COLOR_WHITE}Select option:${COLOR_NC} "
     read -r choice
 
     case "$choice" in
       0)
         if [ "$panel_updater_installed" == true ]; then
-          warning "This will remove the Panel auto-updater"
+          output_warning "This will remove the Panel auto-updater"
           local confirm=""
           bool_input confirm "Are you sure?" "n"
           if [ "$confirm" == "y" ]; then
             remove_auto_updater_panel
-            success "Panel auto-updater removed"
+            output_success "Panel auto-updater removed"
           fi
           break
         else
-          error "Invalid option"
+          output_error "Invalid option"
         fi
         ;;
       1)
         if [ "$elytra_updater_installed" == true ]; then
-          warning "This will remove the Elytra auto-updater"
+          output_warning "This will remove the Elytra auto-updater"
           local confirm=""
           bool_input confirm "Are you sure?" "n"
           if [ "$confirm" == "y" ]; then
             remove_auto_updater_elytra
-            success "Elytra auto-updater removed"
+            output_success "Elytra auto-updater removed"
           fi
           break
         else
-          error "Invalid option"
+          output_error "Invalid option"
         fi
         ;;
       2)
         if [ "$panel_updater_installed" == true ] && [ "$elytra_updater_installed" == true ]; then
-          warning "This will remove both auto-updaters"
+          output_warning "This will remove both auto-updaters"
           local confirm=""
           bool_input confirm "Are you sure?" "n"
           if [ "$confirm" == "y" ]; then
             remove_auto_updater_panel
             remove_auto_updater_elytra
-            success "All auto-updaters removed"
+            output_success "All auto-updaters removed"
           fi
           break
         else
-          error "Invalid option"
+          output_error "Invalid option"
         fi
         ;;
       3)
-        output "Cancelled"
+        output_info "Cancelled"
         break
         ;;
       *)
-        error "Invalid option"
+        output_error "Invalid option"
         ;;
     esac
   done
@@ -306,51 +312,57 @@ show_remove_menu() {
 show_main_menu() {
   while true; do
     print_header
-    print_flame "Auto-Updater Management"
+    print_section "Auto-Updater Management" "$GEAR"
 
-    output "What would you like to do?"
+    output_highlight "What would you like to do?"
     echo ""
-    output "[${COLOR_ORANGE}0${COLOR_NC}] Install Panel auto-updater"
-    output "[${COLOR_ORANGE}1${COLOR_NC}] Install Elytra auto-updater"
-    output "[${COLOR_ORANGE}2${COLOR_NC}] Install both auto-updaters"
+    echo -e "  ${COLOR_GOLD}${PACKAGE}${COLOR_NC}  ${TEXT_BOLD}${COLOR_WHITE}Install Options${COLOR_NC}"
     echo ""
-    output "[${COLOR_ORANGE}3${COLOR_NC}] Remove auto-updaters"
+    print_menu_item "0" "Install Panel auto-updater"
+    print_menu_item "1" "Install Elytra auto-updater"
+    print_menu_item "2" "Install both auto-updaters"
     echo ""
-    output "[${COLOR_ORANGE}4${COLOR_NC}] Return to main menu"
+    echo -e "  ${COLOR_GOLD}${X_MARK}${COLOR_NC}  ${TEXT_BOLD}${COLOR_WHITE}Remove Options${COLOR_NC}"
+    echo ""
+    print_menu_item "3" "Remove auto-updaters"
+    echo ""
+    echo -e "  ${COLOR_GOLD}${ARROW_RIGHT}${COLOR_NC}  ${TEXT_BOLD}${COLOR_WHITE}Navigation${COLOR_NC}"
+    echo ""
+    print_menu_item "4" "Return to main menu"
     echo ""
 
     local choice=""
-    echo -n "* Select [0-4]: "
+    echo -ne "  ${COLOR_GOLD}${ARROW_RIGHT}${COLOR_NC} ${COLOR_WHITE}Select [0-4]:${COLOR_NC} "
     read -r choice
 
     case "$choice" in
       0)
         configure_panel_auto_updater
         echo ""
-        output "Press Enter to continue..."
+        output_info "Press Enter to continue..."
         read -r
         ;;
       1)
         configure_elytra_auto_updater
         echo ""
-        output "Press Enter to continue..."
+        output_info "Press Enter to continue..."
         read -r
         ;;
       2)
         configure_both_auto_updaters
         echo ""
-        output "Press Enter to continue..."
+        output_info "Press Enter to continue..."
         read -r
         ;;
       3)
         show_remove_menu
         ;;
       4)
-        output "Returning to main menu..."
+        output_info "Returning to main menu..."
         exit 0
         ;;
       *)
-        error "Invalid option. Please select 0-4."
+        output_error "Invalid option. Please select 0-4."
         sleep 2
         ;;
     esac

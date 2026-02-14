@@ -55,11 +55,10 @@ BEHIND_PROXY=false
 
 configure_panel_repository() {
   print_header
-  print_section "Panel Repository Configuration" "$PACKAGE"
+  print_flame "Panel Repository Configuration"
 
-  echo ""
-  output_info "The default Pyrodactyl Panel repository is:"
-  echo -e "     ${COLOR_ORANGE}${DEFAULT_PANEL_REPO}${COLOR_NC}"
+  output "The default Pyrodactyl Panel repository is:"
+  output "  ${COLOR_ORANGE}${DEFAULT_PANEL_REPO}${COLOR_NC}"
   echo ""
 
   local use_default=""
@@ -67,18 +66,17 @@ configure_panel_repository() {
 
   if [ "$use_default" == "y" ]; then
     PANEL_REPO="$DEFAULT_PANEL_REPO"
-    output_success "Using default repository: ${COLOR_ORANGE}${PANEL_REPO}${COLOR_NC}"
   else
     required_input PANEL_REPO "Enter the GitHub repository (format: owner/repo): " "Repository cannot be empty"
 
     if [[ ! "$PANEL_REPO" =~ ^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$ ]]; then
-      output_error "Invalid repository format. Must be 'owner/repo'"
+      error "Invalid repository format. Must be 'owner/repo'"
       exit 1
     fi
   fi
 
   echo ""
-  print_kv "Repository" "${PANEL_REPO}"
+  output "Repository: ${COLOR_ORANGE}${PANEL_REPO}${COLOR_NC}"
 
   # Only ask about private repo if not using default (default is public)
   if [ "$use_default" == "n" ]; then
@@ -88,18 +86,18 @@ configure_panel_repository() {
 
     if [ "$PANEL_REPO_PRIVATE" == "true" ]; then
       echo ""
-      output_info "A GitHub Personal Access Token is required for private repositories."
-      output_info "Create one at: https://github.com/settings/tokens"
-      output_info "Required scopes: ${COLOR_ORANGE}repo${COLOR_NC}"
+      output "A GitHub Personal Access Token is required for private repositories."
+      output "Create one at: https://github.com/settings/tokens"
+      output "Required scopes: ${COLOR_ORANGE}repo${COLOR_NC}"
       echo ""
 
       local token_valid=false
       while [ "$token_valid" == false ]; do
         password_input GITHUB_TOKEN_PANEL "Enter your GitHub token: " "Token cannot be empty"
 
-        output_info "Validating token..."
+        output "Validating token..."
         if validate_github_token "$GITHUB_TOKEN_PANEL" "$PANEL_REPO"; then
-          output_success "Token validated successfully"
+          success "Token validated successfully"
           token_valid=true
         else
           warning "Token validation failed. Please check your token and try again."
@@ -110,18 +108,17 @@ configure_panel_repository() {
     PANEL_REPO_PRIVATE="false"
   fi
 
-  echo ""
-  output_info "Checking for releases in repository..."
+  output "Checking for releases in repository..."
   if ! check_releases_exist "$PANEL_REPO" "$GITHUB_TOKEN_PANEL"; then
     echo ""
-    output_error "No releases found in repository: ${PANEL_REPO}"
-    output_warning "You must publish a release before using this installer."
+    error "No releases found in repository: ${PANEL_REPO}"
+    warning "You must publish a release before using this installer."
     exit 1
   fi
 
   local latest_release
   latest_release=$(get_latest_release "$PANEL_REPO" "$GITHUB_TOKEN_PANEL")
-  output_success "Found release: ${latest_release}"
+  success "Found release: ${latest_release}"
 }
 
 # ------------------ Panel Settings ----------------- #
@@ -355,59 +352,55 @@ configure_firewall_settings() {
 
 show_summary() {
   print_header
-  print_section "Installation Summary" "$DIAMOND"
+  print_flame "Installation Summary"
 
-  output_highlight "Please review the following configuration:"
+  output "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  output "  Panel Configuration"
+  output "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo -e "  ${COLOR_ORANGE}Repository:${COLOR_NC}        ${PANEL_REPO} $([ "$PANEL_REPO_PRIVATE" == "true" ] && echo '(private)' || echo '(public)')"
+  echo -e "  ${COLOR_ORANGE}Install Method:${COLOR_NC}    ${PANEL_INSTALL_METHOD}"
+  echo -e "  ${COLOR_ORANGE}Domain:${COLOR_NC}            ${PANEL_FQDN}"
+  echo -e "  ${COLOR_ORANGE}SSL:${COLOR_NC}               $([ "$CONFIGURE_LETSENCRYPT" == "true" ] && echo 'Let'\''s Encrypt' || ([ -n "$SSL_CERT_PATH" ] && echo 'Custom' || echo 'None'))"
+  echo -e "  ${COLOR_ORANGE}Timezone:${COLOR_NC}          ${PANEL_TIMEZONE}"
+  echo -e "  ${COLOR_ORANGE}Admin:${COLOR_NC}             ${PANEL_ADMIN_USERNAME} (${PANEL_ADMIN_EMAIL})"
+  echo -e "  ${COLOR_ORANGE}Auto-Updater:${COLOR_NC}      $([ "$INSTALL_AUTO_UPDATER_PANEL" == "true" ] && echo 'Yes' || echo 'No')"
   echo ""
 
-  # Panel Configuration Box
-  echo -e "  ${COLOR_FIRE_ORANGE}╭────────────────────── Panel Configuration ─────────────────────────╮${COLOR_NC}"
-  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Repository:" "${PANEL_REPO} $([ "$PANEL_REPO_PRIVATE" == "true" ] && echo '(private)' || echo '(public)')"
-  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Install Method:" "${PANEL_INSTALL_METHOD}"
-  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Domain:" "${PANEL_FQDN}"
-  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "SSL:" "$([ "$CONFIGURE_LETSENCRYPT" == "true" ] && echo "Let's Encrypt" || ([ -n "$SSL_CERT_PATH" ] && echo "Custom Certificate" || echo "None"))"
-  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Timezone:" "${PANEL_TIMEZONE}"
-  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Admin:" "${PANEL_ADMIN_USERNAME} (${PANEL_ADMIN_EMAIL})"
-  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Auto-Updater:" "$([ "$INSTALL_AUTO_UPDATER_PANEL" == "true" ] && echo "${COLOR_LIME}Yes${COLOR_NC}" || echo "${COLOR_GRAY}No${COLOR_NC}")"
-  echo -e "  ${COLOR_FIRE_ORANGE}╰────────────────────────────────────────────────────────────────────╯${COLOR_NC}"
+  output "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  output "  Elytra Configuration"
+  output "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo -e "  ${COLOR_ORANGE}Repository:${COLOR_NC}        ${ELYTRA_REPO} $([ "$ELYTRA_REPO_PRIVATE" == "true" ] && echo '(private)' || echo '(public)')"
+  echo -e "  ${COLOR_ORANGE}Panel URL:${COLOR_NC}         https://${PANEL_FQDN} (auto-configured)"
+  echo -e "  ${COLOR_ORANGE}Node Name:${COLOR_NC}         ${NODE_NAME}"
+  echo -e "  ${COLOR_ORANGE}Node Description:${COLOR_NC}  ${NODE_DESCRIPTION}"
+  echo -e "  ${COLOR_ORANGE}Behind Proxy:${COLOR_NC}      $([ "$BEHIND_PROXY" == "true" ] && echo 'Yes' || echo 'No')"
+  echo -e "  ${COLOR_ORANGE}Auto-Updater:${COLOR_NC}      $([ "$INSTALL_AUTO_UPDATER_ELYTRA" == "true" ] && echo 'Yes' || echo 'No')"
   echo ""
 
-  # Elytra Configuration Box
-  echo -e "  ${COLOR_FIRE_ORANGE}╭────────────────────── Elytra Configuration ────────────────────────╮${COLOR_NC}"
-  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Repository:" "${ELYTRA_REPO} $([ "$ELYTRA_REPO_PRIVATE" == "true" ] && echo '(private)' || echo '(public)')"
-  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Panel URL:" "https://${PANEL_FQDN} (auto-configured)"
-  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Node Name:" "${NODE_NAME}"
-  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Node Description:" "${NODE_DESCRIPTION}"
-  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Behind Proxy:" "$([ "$BEHIND_PROXY" == "true" ] && echo "${COLOR_LIME}Yes${COLOR_NC}" || echo "${COLOR_GRAY}No${COLOR_NC}")"
-  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Auto-Updater:" "$([ "$INSTALL_AUTO_UPDATER_ELYTRA" == "true" ] && echo "${COLOR_LIME}Yes${COLOR_NC}" || echo "${COLOR_GRAY}No${COLOR_NC}")"
-  echo -e "  ${COLOR_FIRE_ORANGE}╰────────────────────────────────────────────────────────────────────╯${COLOR_NC}"
-  echo ""
-
-  # Minecraft Server Box
+  output "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  output "  Minecraft Server"
+  output "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo -e "  ${COLOR_ORANGE}Auto-Create:${COLOR_NC}       $([ "$CREATE_MINECRAFT_SERVER" == "true" ] && echo 'Yes' || echo 'No')"
   if [ "$CREATE_MINECRAFT_SERVER" == "true" ]; then
-    echo -e "  ${COLOR_FIRE_ORANGE}╭────────────────────── Minecraft Server ────────────────────────────╮${COLOR_NC}"
-    printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Auto-Create:" "${COLOR_LIME}Yes${COLOR_NC}"
-    printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Server Type:" "Vanilla Minecraft Java"
-    printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Memory:" "4GB"
-    printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Disk:" "32GB"
-    echo -e "  ${COLOR_FIRE_ORANGE}╰────────────────────────────────────────────────────────────────────╯${COLOR_NC}"
-    echo ""
+    echo -e "  ${COLOR_ORANGE}Server Type:${COLOR_NC}       Vanilla Minecraft Java"
+    echo -e "  ${COLOR_ORANGE}Memory:${COLOR_NC}            4GB"
+    echo -e "  ${COLOR_ORANGE}Disk:${COLOR_NC}              32GB"
   fi
-
-  # General Settings Box
-  echo -e "  ${COLOR_FIRE_ORANGE}╭────────────────────── General Settings ────────────────────────────╮${COLOR_NC}"
-  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Firewall:" "$([ "$CONFIGURE_FIREWALL" == "true" ] && echo "${COLOR_LIME}Enabled${COLOR_NC}" || echo "${COLOR_GRAY}Disabled${COLOR_NC}")"
+  echo ""
+  output "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  output "  General Settings"
+  output "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo -e "  ${COLOR_ORANGE}Firewall:${COLOR_NC}          $([ "$CONFIGURE_FIREWALL" == "true" ] && echo 'Enabled' || echo 'Disabled')"
   if [ "$CONFIGURE_FIREWALL" == "true" ]; then
-    printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\n" "Game Support:" "Minecraft, CS:GO/TF2/GMod, ARK, Rust, Valheim, FiveM"
+    echo -e "  ${COLOR_ORANGE}Game Support:${COLOR_NC}      Minecraft, CS:GO/TF2/GMod, ARK, Rust, Valheim, FiveM"
   fi
-  echo -e "  ${COLOR_FIRE_ORANGE}╰────────────────────────────────────────────────────────────────────╯${COLOR_NC}"
   echo ""
 
   local confirm=""
   bool_input confirm "Proceed with installation of both Panel and Elytra?" "y"
 
   if [ "$confirm" != "y" ]; then
-    output_error "Installation aborted"
+    error "Installation aborted"
     exit 1
   fi
 }
@@ -458,8 +451,7 @@ export_variables() {
 # ------------------ Main ----------------- #
 
 main() {
-  print_header
-  print_section "Welcome to the Pyrodactyl + Elytra Combined Installer" "$FIRE"
+  print_flame "Welcome to the Pyrodactyl + Elytra Combined Installer"
 
   configure_panel_repository
   configure_panel_settings
@@ -471,9 +463,7 @@ main() {
 
   export_variables
 
-  echo ""
-  output_info "Starting installation..."
-  echo ""
+  output "Starting installation..."
   run_installer "both"
 }
 

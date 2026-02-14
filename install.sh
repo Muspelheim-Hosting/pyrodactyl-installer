@@ -36,50 +36,6 @@ export COLOR_BLUE='\033[0;34m'
 export COLOR_CYAN='\033[0;36m'
 export COLOR_NC='\033[0m'
 
-# Enhanced color palette
-export COLOR_FIRE_RED='\033[38;5;196m'
-export COLOR_FIRE_ORANGE='\033[38;5;202m'
-export COLOR_GOLD='\033[38;5;220m'
-export COLOR_LIGHT_GOLD='\033[38;5;228m'
-export COLOR_WHITE='\033[1;37m'
-export COLOR_GRAY='\033[90m'
-export COLOR_LIGHT_GRAY='\033[37m'
-export COLOR_PURPLE='\033[38;5;141m'
-export COLOR_PINK='\033[38;5;205m'
-export COLOR_TEAL='\033[38;5;45m'
-export COLOR_LIME='\033[38;5;118m'
-export COLOR_SOFT_WHITE='\033[38;5;251m'
-
-# Text formatting
-export TEXT_BOLD='\033[1m'
-export TEXT_DIM='\033[2m'
-
-# Unicode characters
-export BOX_CORNER_TL='╭'
-export BOX_CORNER_TR='╮'
-export BOX_CORNER_BL='╰'
-export BOX_CORNER_BR='╯'
-export BOX_HORIZ='─'
-export BOX_VERT='│'
-export ARROW_RIGHT='→'
-export CHECK_MARK='✓'
-export X_MARK='✗'
-export BULLET='•'
-export DIAMOND='◆'
-export STAR='★'
-export FIRE='🔥'
-export ROCKET='🚀'
-export GEAR='⚙'
-export LOCK='🔒'
-export KEY='🔑'
-export GLOBE='🌐'
-export DATABASE='🗄'
-export SERVER='🖥'
-export PACKAGE='📦'
-export WARNING='⚠'
-export INFO='ℹ'
-export QUESTION='?'
-
 # Smooth flame gradient colors (top to bottom) - red to gold
 export GRADIENT_1='\033[38;5;196m'   # Deep red
 export GRADIENT_2='\033[38;5;202m'   # Red-orange
@@ -158,41 +114,28 @@ print_header() {
   clear 2>/dev/null || true
   echo ""
 
-  # Top decorative border with flame gradient
-  echo -e "${GRADIENT_1}    ╔══════════════════════════════════════════════════════════════════════════════════════╗${COLOR_NC}"
-  echo -e "${GRADIENT_1}    ║${COLOR_NC}                                                                                      ${GRADIENT_1}║${COLOR_NC}"
-
-  # ASCII Art with smooth flame gradient
-  echo -e "${GRADIENT_1}    ║${COLOR_NC}  ${GRADIENT_1}███╗   ███╗${COLOR_NC} ${GRADIENT_2}██╗   ██╗${COLOR_NC} ${GRADIENT_3}███████╗${COLOR_NC} ${GRADIENT_4}██████╗ ${COLOR_NC} ${GRADIENT_5}███████╗${COLOR_NC} ${GRADIENT_6}██╗${COLOR_NC}     ${GRADIENT_7}██╗  ██╗${COLOR_NC} ${GRADIENT_8}███████╗${COLOR_NC} ${GRADIENT_9}██╗${COLOR_NC} ${GRADIENT_10}███╗   ███╗${COLOR_NC}  ${GRADIENT_1}║${COLOR_NC}"
-  echo -e "${GRADIENT_1}    ║${COLOR_NC}  ${GRADIENT_1}████╗ ████║${COLOR_NC} ${GRADIENT_2}██║   ██║${COLOR_NC} ${GRADIENT_3}██╔════╝${COLOR_NC} ${GRADIENT_4}██╔══██╗${COLOR_NC} ${GRADIENT_5}██╔════╝${COLOR_NC} ${GRADIENT_6}██║${COLOR_NC}     ${GRADIENT_7}██║  ██║${COLOR_NC} ${GRADIENT_8}██╔════╝${COLOR_NC} ${GRADIENT_9}██║${COLOR_NC} ${GRADIENT_10}████╗ ████║${COLOR_NC}  ${GRADIENT_1}║${COLOR_NC}"
-  echo -e "${GRADIENT_1}    ║${COLOR_NC}  ${GRADIENT_1}██╔████╔██║${COLOR_NC} ${GRADIENT_2}██║   ██║${COLOR_NC} ${GRADIENT_3}███████╗${COLOR_NC} ${GRADIENT_4}██████╔╝${COLOR_NC} ${GRADIENT_5}█████╗  ${COLOR_NC} ${GRADIENT_6}██║${COLOR_NC}     ${GRADIENT_7}███████║${COLOR_NC} ${GRADIENT_8}█████╗  ${COLOR_NC} ${GRADIENT_9}██║${COLOR_NC} ${GRADIENT_10}██╔████╔██║${COLOR_NC}  ${GRADIENT_1}║${COLOR_NC}"
-  echo -e "${GRADIENT_1}    ║${COLOR_NC}  ${GRADIENT_1}██║╚██╔╝██║${COLOR_NC} ${GRADIENT_2}██║   ██║${COLOR_NC} ${GRADIENT_3}╚════██║${COLOR_NC} ${GRADIENT_4}██╔═══╝ ${COLOR_NC} ${GRADIENT_5}██╔══╝  ${COLOR_NC} ${GRADIENT_6}██║${COLOR_NC}     ${GRADIENT_7}██╔══██║${COLOR_NC} ${GRADIENT_8}██╔══╝  ${COLOR_NC} ${GRADIENT_9}██║${COLOR_NC} ${GRADIENT_10}██║╚██╔╝██║${COLOR_NC}  ${GRADIENT_1}║${COLOR_NC}"
-  echo -e "${GRADIENT_1}    ║${COLOR_NC}  ${GRADIENT_1}██║ ╚═╝ ██║${COLOR_NC} ${GRADIENT_2}╚██████╔╝${COLOR_NC} ${GRADIENT_3}███████║${COLOR_NC} ${GRADIENT_4}██║     ${COLOR_NC} ${GRADIENT_5}███████╗${COLOR_NC} ${GRADIENT_6}███████╗${COLOR_NC} ${GRADIENT_7}██║  ██║${COLOR_NC} ${GRADIENT_8}███████╗${COLOR_NC} ${GRADIENT_9}██║${COLOR_NC} ${GRADIENT_10}██║ ╚═╝ ██║${COLOR_NC}  ${GRADIENT_1}║${COLOR_NC}"
-  echo -e "${GRADIENT_1}    ║${COLOR_NC}  ${GRADIENT_1}╚═╝     ╚═╝${COLOR_NC} ${GRADIENT_2} ╚═════╝ ${COLOR_NC} ${GRADIENT_3}╚══════╝${COLOR_NC} ${GRADIENT_4}╚═╝     ${COLOR_NC} ${GRADIENT_5}╚══════╝${COLOR_NC} ${GRADIENT_6}╚══════╝${COLOR_NC} ${GRADIENT_7}╚═╝  ╚═╝${COLOR_NC} ${GRADIENT_8}╚══════╝${COLOR_NC} ${GRADIENT_9}╚═╝${COLOR_NC} ${GRADIENT_10}╚═╝     ╚═╝${COLOR_NC}  ${GRADIENT_1}║${COLOR_NC}"
-
-  # Separator
-  echo -e "${GRADIENT_1}    ║${COLOR_NC}                                                                                      ${GRADIENT_1}║${COLOR_NC}"
-  echo -e "${GRADIENT_5}    ║${COLOR_NC}                    ${TEXT_BOLD}${COLOR_GOLD}🔥  Pyrodactyl Installation Manager  🔥${COLOR_NC}${TEXT_BOLD}                         ${GRADIENT_5}║${COLOR_NC}"
-
-  # Bottom border
-  echo -e "${GRADIENT_11}    ╚══════════════════════════════════════════════════════════════════════════════════════╝${COLOR_NC}"
-
-  # Version info with decorative elements
-  echo ""
-  echo -e "    ${COLOR_FIRE_ORANGE}${BOX_CORNER_TL}${BOX_HORIZ}${BOX_HORIZ}${BOX_HORIZ}${BOX_CORNER_TR}${COLOR_NC}  ${COLOR_GOLD}Version:${COLOR_NC} ${COLOR_WHITE}${SCRIPT_RELEASE}${COLOR_NC}"
-  echo -e "    ${COLOR_FIRE_ORANGE}${BOX_VERT}${COLOR_NC} ${COLOR_ORANGE}⚡${COLOR_NC} ${COLOR_FIRE_ORANGE}${BOX_VERT}${COLOR_NC}  ${COLOR_GOLD}By:${COLOR_NC} ${COLOR_WHITE}Muspelheim Hosting${COLOR_NC}"
-  echo -e "    ${COLOR_FIRE_ORANGE}${BOX_CORNER_BL}${BOX_HORIZ}${BOX_HORIZ}${BOX_HORIZ}${BOX_CORNER_BR}${COLOR_NC}"
+  # Flame gradient header - smooth color transition from top to bottom
+  echo -e "${GRADIENT_1}    ╔══════════════════════════════════════════════════════════════════════════════════════╗"
+  echo -e "${GRADIENT_2}    ║                                                                                      ║"
+  echo -e "${GRADIENT_3}    ║  ███╗   ███╗██╗   ██╗███████╗██████╗ ███████╗██╗     ██╗  ██╗███████╗██╗███╗   ███╗  ║"
+  echo -e "${GRADIENT_4}    ║  ████╗ ████║██║   ██║██╔════╝██╔══██╗██╔════╝██║     ██║  ██║██╔════╝██║████╗ ████║  ║"
+  echo -e "${GRADIENT_5}    ║  ██╔████╔██║██║   ██║███████╗██████╔╝█████╗  ██║     ███████║█████╗  ██║██╔████╔██║  ║"
+  echo -e "${GRADIENT_6}    ║  ██║╚██╔╝██║██║   ██║╚════██║██╔═══╝ ██╔══╝  ██║     ██╔══██║██╔══╝  ██║██║╚██╔╝██║  ║"
+  echo -e "${GRADIENT_7}    ║  ██║ ╚═╝ ██║╚██████╔╝███████║██║     ███████╗███████╗██║  ██║███████╗██║██║ ╚═╝ ██║  ║"
+  echo -e "${GRADIENT_8}    ║  ╚═╝     ╚═╝ ╚═════╝ ╚══════╝╚═╝     ╚══════╝╚══════╝╚═╝  ╚═╝╚══════╝╚═╝╚═╝     ╚═╝  ║"
+  echo -e "${GRADIENT_9}    ║                                                                                      ║"
+  echo -e "${GRADIENT_10}    ║                            Pyrodactyl Installation Manager                           ║"
+  echo -e "${GRADIENT_11}    ╚══════════════════════════════════════════════════════════════════════════════════════╝"
+  echo -e "${COLOR_NC}"
+  echo -e "    ${COLOR_ORANGE}Version:${COLOR_NC} ${SCRIPT_RELEASE}  ${COLOR_ORANGE}|${COLOR_NC}  ${COLOR_ORANGE}By:${COLOR_NC} Muspelheim Hosting"
   echo ""
 }
 
 print_flame() {
   local message="$1"
-  local icon="${2:-$FIRE}"
 
   echo ""
-  echo -e "  ${COLOR_FIRE_ORANGE}╭────────────────────────────────────────────────────────────────────╮${COLOR_NC}"
-  echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}${icon}${COLOR_NC}  ${TEXT_BOLD}${COLOR_WHITE}${message}${COLOR_NC}"
-  echo -e "  ${COLOR_FIRE_ORANGE}╰────────────────────────────────────────────────────────────────────╯${COLOR_NC}"
+  echo -e "${COLOR_ORANGE}  $message${COLOR_NC}"
   echo ""
 }
 
@@ -325,40 +268,38 @@ show_welcome() {
     os_info="$NAME $VERSION_ID"
   fi
 
-  echo -e "  ${COLOR_FIRE_ORANGE}${SERVER}${COLOR_NC} ${COLOR_GOLD}Operating System:${COLOR_NC} ${COLOR_WHITE}${os_info}${COLOR_NC}"
+  echo -e "  ${COLOR_ORANGE}Operating System:${COLOR_NC} $os_info"
   echo ""
-
-  # System Status Box
-  echo -e "  ${COLOR_FIRE_ORANGE}╭────────────────────────── System Status ───────────────────────────╮${COLOR_NC}"
 
   # Check and display installed components
   check_installations
 
   if [ "$PANEL_INSTALLED" == true ]; then
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_LIME}${CHECK_MARK}${COLOR_NC} ${COLOR_SOFT_WHITE}Panel installed${COLOR_NC}${PANEL_VERSION:+ ${COLOR_GRAY}(${PANEL_VERSION})${COLOR_NC}}                               ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+    echo -e "  ${COLOR_GREEN}✓${COLOR_NC} Panel installed${PANEL_VERSION:+ ($PANEL_VERSION)}"
   else
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_RED}${X_MARK}${COLOR_NC} ${COLOR_GRAY}Panel not installed                                     ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+    echo -e "  ${COLOR_RED}✗${COLOR_NC} Panel not installed"
   fi
 
   if [ "$ELYTRA_INSTALLED" == true ]; then
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_LIME}${CHECK_MARK}${COLOR_NC} ${COLOR_SOFT_WHITE}Elytra installed${COLOR_NC}${ELYTRA_VERSION:+ ${COLOR_GRAY}(${ELYTRA_VERSION})${COLOR_NC}}                              ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+    echo -e "  ${COLOR_GREEN}✓${COLOR_NC} Elytra installed${ELYTRA_VERSION:+ ($ELYTRA_VERSION)}"
   else
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_RED}${X_MARK}${COLOR_NC} ${COLOR_GRAY}Elytra not installed                                    ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+    echo -e "  ${COLOR_RED}✗${COLOR_NC} Elytra not installed"
   fi
 
   if [ "$PANEL_UPDATER_INSTALLED" == true ]; then
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_LIME}${CHECK_MARK}${COLOR_NC} ${COLOR_SOFT_WHITE}Panel auto-updater enabled                              ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+    echo -e "  ${COLOR_GREEN}✓${COLOR_NC} Panel auto-updater enabled"
   else
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_RED}${X_MARK}${COLOR_NC} ${COLOR_GRAY}Panel auto-updater not installed                        ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+    echo -e "  ${COLOR_RED}✗${COLOR_NC} Panel auto-updater not installed"
   fi
 
   if [ "$ELYTRA_UPDATER_INSTALLED" == true ]; then
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_LIME}${CHECK_MARK}${COLOR_NC} ${COLOR_SOFT_WHITE}Elytra auto-updater enabled                             ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+    echo -e "  ${COLOR_GREEN}✓${COLOR_NC} Elytra auto-updater enabled"
   else
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_RED}${X_MARK}${COLOR_NC} ${COLOR_GRAY}Elytra auto-updater not installed                       ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+    echo -e "  ${COLOR_RED}✗${COLOR_NC} Elytra auto-updater not installed"
   fi
 
-  echo -e "  ${COLOR_FIRE_ORANGE}╰────────────────────────────────────────────────────────────────────╯${COLOR_NC}"
+  echo ""
+  print_brake 70
   echo ""
 }
 
@@ -472,50 +413,43 @@ show_menu() {
   while true; do
     show_welcome
 
-    # Main Menu Box
-    echo -e "  ${COLOR_FIRE_ORANGE}╭────────────────────────── Main Menu ───────────────────────────────╮${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}                                                                    ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}${PACKAGE}${COLOR_NC}  ${TEXT_BOLD}${COLOR_WHITE}Installation Options${COLOR_NC}                                    ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}                                                                    ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}     ${COLOR_ORANGE}[${COLOR_WHITE}0${COLOR_ORANGE}]${COLOR_NC} ${COLOR_SOFT_WHITE}Install Pyrodactyl Panel${COLOR_NC}                              ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}     ${COLOR_ORANGE}[${COLOR_WHITE}1${COLOR_ORANGE}]${COLOR_NC} ${COLOR_SOFT_WHITE}Install Elytra Daemon${COLOR_NC}                                 ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}     ${COLOR_ORANGE}[${COLOR_WHITE}2${COLOR_ORANGE}]${COLOR_NC} ${COLOR_SOFT_WHITE}Install both Panel and Elytra (same machine)${COLOR_NC}          ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}                                                                    ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+    echo ""
+    output "${COLOR_ORANGE}What would you like to do?${COLOR_NC}"
+    echo ""
+    output "[${COLOR_ORANGE}0${COLOR_NC}] Install Pyrodactyl Panel"
+    output "[${COLOR_ORANGE}1${COLOR_NC}] Install Elytra Daemon"
+    output "[${COLOR_ORANGE}2${COLOR_NC}] Install both Panel and Elytra (same machine)"
+    echo ""
 
     # Update options - gray out if not installed
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}${ROCKET}${COLOR_NC}  ${TEXT_BOLD}${COLOR_WHITE}Update Options${COLOR_NC}                                        ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}                                                                    ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-
+    local COLOR_DARK_GRAY='\033[90m'
     if [ "$PANEL_INSTALLED" == true ]; then
-      echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}     ${COLOR_ORANGE}[${COLOR_WHITE}3${COLOR_ORANGE}]${COLOR_NC} ${COLOR_SOFT_WHITE}Update Pyrodactyl Panel${COLOR_NC}                               ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+      output "[${COLOR_ORANGE}3${COLOR_NC}] Update Pyrodactyl Panel"
     else
-      echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}     ${COLOR_GRAY}[3] Update Pyrodactyl Panel (not installed)${COLOR_NC}           ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+      echo -e "* [3] ${COLOR_DARK_GRAY}Update Pyrodactyl Panel (not installed)${COLOR_NC}"
     fi
 
     if [ "$ELYTRA_INSTALLED" == true ]; then
-      echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}     ${COLOR_ORANGE}[${COLOR_WHITE}4${COLOR_ORANGE}]${COLOR_NC} ${COLOR_SOFT_WHITE}Update Elytra Daemon${COLOR_NC}                                  ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+      output "[${COLOR_ORANGE}4${COLOR_NC}] Update Elytra Daemon"
     else
-      echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}     ${COLOR_GRAY}[4] Update Elytra Daemon (not installed)${COLOR_NC}              ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+      echo -e "* [4] ${COLOR_DARK_GRAY}Update Elytra Daemon (not installed)${COLOR_NC}"
     fi
 
     if [ "$PANEL_INSTALLED" == true ] && [ "$ELYTRA_INSTALLED" == true ]; then
-      echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}     ${COLOR_ORANGE}[${COLOR_WHITE}5${COLOR_ORANGE}]${COLOR_NC} ${COLOR_SOFT_WHITE}Update both Panel and Elytra${COLOR_NC}                          ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+      output "[${COLOR_ORANGE}5${COLOR_NC}] Update both Panel and Elytra"
     else
-      echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}     ${COLOR_GRAY}[5] Update both Panel and Elytra (not available)${COLOR_NC}      ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+      echo -e "* [5] ${COLOR_DARK_GRAY}Update both Panel and Elytra (not available)${COLOR_NC}"
     fi
 
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}                                                                    ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}${GEAR}${COLOR_NC}  ${TEXT_BOLD}${COLOR_WHITE}Management${COLOR_NC}                                            ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}                                                                    ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}     ${COLOR_ORANGE}[${COLOR_WHITE}6${COLOR_ORANGE}]${COLOR_NC} ${COLOR_SOFT_WHITE}Auto Updater Management${COLOR_NC}                               ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}     ${COLOR_ORANGE}[${COLOR_WHITE}7${COLOR_ORANGE}]${COLOR_NC} ${COLOR_SOFT_WHITE}Uninstall Pyrodactyl / Elytra${COLOR_NC}                         ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}                                                                    ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}${DIAMOND}${COLOR_NC}  ${COLOR_ORANGE}[${COLOR_WHITE}8${COLOR_ORANGE}]${COLOR_NC} ${COLOR_SOFT_WHITE}Exit${COLOR_NC}                                                  ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}                                                                    ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}╰────────────────────────────────────────────────────────────────────╯${COLOR_NC}"
+    echo ""
+    output "[${COLOR_ORANGE}6${COLOR_NC}] Auto Updater Management"
+    echo ""
+    output "[${COLOR_ORANGE}7${COLOR_NC}] Uninstall Pyrodactyl / Elytra"
+    echo ""
+    output "[${COLOR_ORANGE}8${COLOR_NC}] Exit"
     echo ""
 
-    echo -ne "  ${COLOR_GOLD}${ARROW_RIGHT}${COLOR_NC} ${COLOR_WHITE}Select an option [0-8]:${COLOR_NC} "
+    echo -n "* Select an option [0-8]: "
     read -r choice
 
     case "$choice" in
@@ -533,9 +467,7 @@ show_menu() {
         ;;
       3)
         if [ "$PANEL_INSTALLED" == false ]; then
-          echo ""
-          output_error "Pyrodactyl Panel is not installed"
-          echo ""
+          error "Pyrodactyl Panel is not installed"
           sleep 2
           continue
         fi
@@ -544,9 +476,7 @@ show_menu() {
         ;;
       4)
         if [ "$ELYTRA_INSTALLED" == false ]; then
-          echo ""
-          output_error "Elytra Daemon is not installed"
-          echo ""
+          error "Elytra Daemon is not installed"
           sleep 2
           continue
         fi
@@ -555,9 +485,7 @@ show_menu() {
         ;;
       5)
         if [ "$PANEL_INSTALLED" == false ] || [ "$ELYTRA_INSTALLED" == false ]; then
-          echo ""
-          output_error "Both Panel and Elytra must be installed to use this option"
-          echo ""
+          error "Both Panel and Elytra must be installed to use this option"
           sleep 2
           continue
         fi
@@ -573,16 +501,11 @@ show_menu() {
         continue
         ;;
       8)
-        echo ""
-        echo -e "  ${COLOR_GOLD}${FIRE}${COLOR_NC} ${COLOR_SOFT_WHITE}Thank you for using Pyrodactyl Installer!${COLOR_NC}"
-        echo ""
+        output "Exiting..."
         exit 0
         ;;
       *)
-        echo ""
-        output_error "Invalid option. Please select 0-8."
-        echo ""
-        sleep 1
+        error "Invalid option. Please select 0-8."
         ;;
     esac
   done

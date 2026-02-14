@@ -54,45 +54,49 @@ detect_installed_components() {
 
 show_main_menu() {
   print_header
-  print_section "Uninstall Pyrodactyl / Elytra" "$X_MARK"
+  print_flame "Uninstall Pyrodactyl / Elytra"
 
-  output_highlight "Installed components detected:"
+  output "Installed components detected:"
   echo ""
 
-  # Status box
-  echo -e "  ${COLOR_FIRE_ORANGE}╭────────────────────────────────────────────────────────────────────╮${COLOR_NC}"
-  print_status "Pyrodactyl Panel" "$PANEL_INSTALLED"
-  print_status "Elytra Daemon" "$ELYTRA_INSTALLED"
-  if [ "$PANEL_UPDATER_INSTALLED" == true ] || [ "$ELYTRA_UPDATER_INSTALLED" == true ]; then
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_LIME}${CHECK_MARK}${COLOR_NC} ${COLOR_SOFT_WHITE}Auto-updaters${COLOR_NC}                                        ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+  if [ "$PANEL_INSTALLED" == true ]; then
+    echo -e "  ${COLOR_GREEN}✓${COLOR_NC} Pyrodactyl Panel"
   else
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_RED}${X_MARK}${COLOR_NC} ${COLOR_GRAY}Auto-updaters${COLOR_NC}                                        ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
+    echo -e "  ${COLOR_RED}✗${COLOR_NC} Pyrodactyl Panel"
   fi
-  echo -e "  ${COLOR_FIRE_ORANGE}╰────────────────────────────────────────────────────────────────────╯${COLOR_NC}"
-  echo ""
 
-  output_highlight "What would you like to uninstall?"
+  if [ "$ELYTRA_INSTALLED" == true ]; then
+    echo -e "  ${COLOR_GREEN}✓${COLOR_NC} Elytra Daemon"
+  else
+    echo -e "  ${COLOR_RED}✗${COLOR_NC} Elytra Daemon"
+  fi
+
+  if [ "$PANEL_UPDATER_INSTALLED" == true ] || [ "$ELYTRA_UPDATER_INSTALLED" == true ]; then
+    echo -e "  ${COLOR_GREEN}✓${COLOR_NC} Auto-updaters"
+  else
+    echo -e "  ${COLOR_RED}✗${COLOR_NC} Auto-updaters"
+  fi
+
   echo ""
-  print_menu_item "0" "Uninstall Panel only"
-  print_menu_item "1" "Uninstall Elytra only"
-  print_menu_item "2" "Uninstall both Panel and Elytra"
+  output "What would you like to uninstall?"
   echo ""
-  print_menu_item "3" "Remove auto-updaters only"
-  print_menu_item "4" "Uninstall everything" "Panel, Elytra, Auto-updaters"
-  echo ""
-  echo -e "  ${COLOR_GRAY}${BULLET} [5] Cancel${COLOR_NC}"
+  output "[${COLOR_ORANGE}0${COLOR_NC}] Uninstall Panel only"
+  output "[${COLOR_ORANGE}1${COLOR_NC}] Uninstall Elytra only"
+  output "[${COLOR_ORANGE}2${COLOR_NC}] Uninstall both Panel and Elytra"
+  output "[${COLOR_ORANGE}3${COLOR_NC}] Remove auto-updaters only"
+  output "[${COLOR_ORANGE}4${COLOR_NC}] Uninstall everything (Panel, Elytra, Auto-updaters)"
+  output "[${COLOR_ORANGE}5${COLOR_NC}] Cancel"
   echo ""
 
   local choice=""
   while true; do
-    echo -ne "  ${COLOR_GOLD}${ARROW_RIGHT}${COLOR_NC} ${COLOR_WHITE}Select [0-5]:${COLOR_NC} "
+    echo -n "* Select [0-5]: "
     read -r choice
 
     case "$choice" in
       0)
         if [ "$PANEL_INSTALLED" == false ]; then
-          output_error "Panel is not installed"
-          sleep 1
+          error "Panel is not installed"
           continue
         fi
         REMOVE_PANEL=true
@@ -101,8 +105,7 @@ show_main_menu() {
         ;;
       1)
         if [ "$ELYTRA_INSTALLED" == false ]; then
-          output_error "Elytra is not installed"
-          sleep 1
+          error "Elytra is not installed"
           continue
         fi
         REMOVE_ELYTRA=true
@@ -111,8 +114,7 @@ show_main_menu() {
         ;;
       2)
         if [ "$PANEL_INSTALLED" == false ] && [ "$ELYTRA_INSTALLED" == false ]; then
-          output_error "Neither Panel nor Elytra are installed"
-          sleep 1
+          error "Neither Panel nor Elytra are installed"
           continue
         fi
         REMOVE_PANEL=true
@@ -122,8 +124,7 @@ show_main_menu() {
         ;;
       3)
         if [ "$PANEL_UPDATER_INSTALLED" == false ] && [ "$ELYTRA_UPDATER_INSTALLED" == false ]; then
-          output_error "No auto-updaters are installed"
-          sleep 1
+          error "No auto-updaters are installed"
           continue
         fi
         REMOVE_AUTO_UPDATERS=true
@@ -132,8 +133,7 @@ show_main_menu() {
         ;;
       4)
         if [ "$PANEL_INSTALLED" == false ] && [ "$ELYTRA_INSTALLED" == false ]; then
-          output_error "Nothing is installed"
-          sleep 1
+          error "Nothing is installed"
           continue
         fi
         REMOVE_PANEL=true
@@ -143,14 +143,11 @@ show_main_menu() {
         return
         ;;
       5)
-        echo ""
-        output_info "Cancelled"
-        echo ""
+        output "Cancelled"
         exit 0
         ;;
       *)
-        output_error "Invalid option. Please select 0-5."
-        sleep 1
+        error "Invalid option. Please select 0-5."
         ;;
     esac
   done
@@ -162,19 +159,17 @@ confirm_uninstall() {
   local component="$1"
 
   print_header
-  print_section "Confirm Uninstall" "$WARNING"
+  print_flame "Confirm Uninstall"
 
-  output_warning "You are about to uninstall ${component}"
+  warning "You are about to uninstall ${component}"
   echo ""
 
   if [ "$REMOVE_PANEL" == true ]; then
-    echo -e "  ${COLOR_FIRE_ORANGE}╭────────────────────────── Panel Removal ───────────────────────────╮${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_WHITE}This will remove:${COLOR_NC}                                          ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}    ${COLOR_GRAY}• Panel files (/var/www/pyrodactyl)${COLOR_NC}                      ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}    ${COLOR_GRAY}• Nginx configuration${COLOR_NC}                                    ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}    ${COLOR_GRAY}• Systemd services (pyroq)${COLOR_NC}                               ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}    ${COLOR_GRAY}• Cron jobs${COLOR_NC}                                              ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}╰────────────────────────────────────────────────────────────────────╯${COLOR_NC}"
+    output "Panel removal includes:"
+    output "  - Panel files (/var/www/pyrodactyl)"
+    output "  - Nginx configuration"
+    output "  - Systemd services (pyroq)"
+    output "  - Cron jobs"
     echo ""
 
     local remove_db=""
@@ -187,36 +182,32 @@ confirm_uninstall() {
   fi
 
   if [ "$REMOVE_ELYTRA" == true ]; then
-    echo -e "  ${COLOR_FIRE_ORANGE}╭────────────────────────── Elytra Removal ──────────────────────────╮${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_WHITE}This will remove:${COLOR_NC}                                          ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}    ${COLOR_GRAY}• Elytra binary (/usr/local/bin/elytra)${COLOR_NC}                  ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}    ${COLOR_GRAY}• Elytra configuration (/etc/elytra)${COLOR_NC}                     ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}    ${COLOR_GRAY}• Systemd service (elytra)${COLOR_NC}                               ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}    ${COLOR_GRAY}• Docker containers (game servers will be stopped)${COLOR_NC}       ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}╰────────────────────────────────────────────────────────────────────╯${COLOR_NC}"
+    echo ""
+    output "Elytra removal includes:"
+    output "  - Elytra binary (/usr/local/bin/elytra)"
+    output "  - Elytra configuration (/etc/elytra)"
+    output "  - Systemd service (elytra)"
+    output "  - Docker containers (game servers will be stopped)"
     echo ""
   fi
 
   if [ "$REMOVE_AUTO_UPDATERS" == true ]; then
-    echo -e "  ${COLOR_FIRE_ORANGE}╭──────────────────────── Auto-Updater Removal ──────────────────────╮${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_WHITE}This will remove:${COLOR_NC}                                          ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}    ${COLOR_GRAY}• Auto-update scripts${COLOR_NC}                                    ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}    ${COLOR_GRAY}• Systemd timer services${COLOR_NC}                                 ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}    ${COLOR_GRAY}• Configuration files${COLOR_NC}                                    ${COLOR_FIRE_ORANGE}│${COLOR_NC}"
-    echo -e "  ${COLOR_FIRE_ORANGE}╰────────────────────────────────────────────────────────────────────╯${COLOR_NC}"
+    echo ""
+    output "Auto-updater removal includes:"
+    output "  - Auto-update scripts"
+    output "  - Systemd timer services"
+    output "  - Configuration files"
     echo ""
   fi
 
   echo ""
-  output_error "This action cannot be undone!"
+  warning "This action cannot be undone!"
   echo ""
   local confirm=""
   bool_input confirm "Are you sure you want to proceed?" "n"
 
   if [ "$confirm" != "y" ]; then
-    echo ""
-    output_info "Uninstall cancelled"
-    echo ""
+    output "Uninstall cancelled"
     exit 0
   fi
 }
@@ -238,24 +229,20 @@ main() {
 
   if [ "$PANEL_INSTALLED" == false ] && [ "$ELYTRA_INSTALLED" == false ] && [ "$PANEL_UPDATER_INSTALLED" == false ] && [ "$ELYTRA_UPDATER_INSTALLED" == false ]; then
     print_header
-    print_section "Nothing to Uninstall" "$INFO"
-    output_info "No Pyrodactyl components were detected on this system."
+    print_flame "Nothing to Uninstall"
+    output "No Pyrodactyl components were detected on this system."
     echo ""
-    output_highlight "If you believe this is an error, you may need to manually remove:"
-    echo ""
-    echo -e "  ${COLOR_GRAY}• /var/www/pyrodactyl${COLOR_NC} ${COLOR_SOFT_WHITE}(Panel files)${COLOR_NC}"
-    echo -e "  ${COLOR_GRAY}• /usr/local/bin/elytra${COLOR_NC} ${COLOR_SOFT_WHITE}(Elytra binary)${COLOR_NC}"
-    echo -e "  ${COLOR_GRAY}• /etc/elytra${COLOR_NC} ${COLOR_SOFT_WHITE}(Elytra configuration)${COLOR_NC}"
-    echo ""
+    output "If you believe this is an error, you may need to manually remove:"
+    output "  - /var/www/pyrodactyl (Panel files)"
+    output "  - /usr/local/bin/elytra (Elytra binary)"
+    output "  - /etc/elytra (Elytra configuration)"
     exit 0
   fi
 
   show_main_menu
   export_variables
 
-  echo ""
-  output_info "Starting uninstallation..."
-  echo ""
+  output "Starting uninstallation..."
   run_installer "uninstall"
 }
 

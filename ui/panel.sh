@@ -48,10 +48,11 @@ DB_PASSWORD=""
 
 configure_github_repository() {
   print_header
-  print_flame "GitHub Repository Configuration"
+  print_section "GitHub Repository Configuration" "$PACKAGE"
 
-  output "The default Pyrodactyl Panel repository is:"
-  output "  ${COLOR_ORANGE}${DEFAULT_PANEL_REPO}${COLOR_NC}"
+  echo ""
+  output_info "The default Pyrodactyl Panel repository is:"
+  echo -e "     ${COLOR_ORANGE}${DEFAULT_PANEL_REPO}${COLOR_NC}"
   echo ""
 
   local use_default=""
@@ -59,17 +60,18 @@ configure_github_repository() {
 
   if [ "$use_default" == "y" ]; then
     PANEL_REPO="$DEFAULT_PANEL_REPO"
+    output_success "Using default repository: ${COLOR_ORANGE}${PANEL_REPO}${COLOR_NC}"
   else
     required_input PANEL_REPO "Enter the GitHub repository (format: owner/repo): " "Repository cannot be empty"
 
     if [[ ! "$PANEL_REPO" =~ ^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$ ]]; then
-      error "Invalid repository format. Must be 'owner/repo'"
+      output_error "Invalid repository format. Must be 'owner/repo'"
       exit 1
     fi
   fi
 
   echo ""
-  output "Repository: ${COLOR_ORANGE}${PANEL_REPO}${COLOR_NC}"
+  print_kv "Repository" "${PANEL_REPO}"
 
   # Only ask about private repo if not using default (default is public)
   if [ "$use_default" == "n" ]; then
@@ -79,21 +81,21 @@ configure_github_repository() {
 
     if [ "$PANEL_REPO_PRIVATE" == "true" ]; then
       echo ""
-      output "A GitHub Personal Access Token is required for private repositories."
-      output "Create one at: $(hyperlink "https://github.com/settings/tokens")"
-      output "Required scopes: ${COLOR_ORANGE}repo${COLOR_NC}"
+      output_info "A GitHub Personal Access Token is required for private repositories."
+      output_info "Create one at: $(hyperlink "https://github.com/settings/tokens")"
+      output_info "Required scopes: ${COLOR_ORANGE}repo${COLOR_NC}"
       echo ""
 
       local token_valid=false
       while [ "$token_valid" == false ]; do
         password_input GITHUB_TOKEN "Enter your GitHub token: " "Token cannot be empty"
 
-        output "Validating token..."
+        output_info "Validating token..."
         if validate_github_token "$GITHUB_TOKEN" "$PANEL_REPO"; then
-          success "Token validated successfully"
+          output_success "Token validated successfully"
           token_valid=true
         else
-          warning "Token validation failed. Please check your token and try again."
+          output_warning "Token validation failed. Please check your token and try again."
         fi
       done
     fi
@@ -101,43 +103,45 @@ configure_github_repository() {
     PANEL_REPO_PRIVATE="false"
   fi
 
-  output "Checking for releases in repository..."
+  echo ""
+  output_info "Checking for releases in repository..."
   if ! check_releases_exist "$PANEL_REPO" "$GITHUB_TOKEN"; then
     echo ""
-    error "No releases found in repository: ${PANEL_REPO}"
-    warning "You must publish a release before using this installer."
+    output_error "No releases found in repository: ${PANEL_REPO}"
+    output_warning "You must publish a release before using this installer."
     exit 1
   fi
 
   local latest_release
   latest_release=$(get_latest_release "$PANEL_REPO" "$GITHUB_TOKEN")
-  success "Found release: ${latest_release}"
+  output_success "Found release: ${latest_release}"
 }
 
 # ------------------ Installation Method ----------------- #
 
 configure_installation_method() {
   print_header
-  print_flame "Installation Method"
+  print_section "Installation Method" "$GEAR"
 
-  output "How would you like to install the panel?"
   echo ""
-  output "[${COLOR_ORANGE}0${COLOR_NC}] Download latest release tarball (recommended)"
-  output "[${COLOR_ORANGE}1${COLOR_NC}] Clone from Git repository (development)"
+  output_highlight "How would you like to install the panel?"
+  echo ""
+  print_menu_item "0" "Download latest release tarball" "recommended for production"
+  print_menu_item "1" "Clone from Git repository" "for development"
   echo ""
 
   local method_choice=""
   while [[ "$method_choice" != "0" && "$method_choice" != "1" ]]; do
-    echo -n "* Select [0-1]: "
+    echo -ne "  ${COLOR_GOLD}${ARROW_RIGHT}${COLOR_NC} ${COLOR_WHITE}Select [0-1]:${COLOR_NC} "
     read -r method_choice
   done
 
   if [ "$method_choice" == "0" ]; then
     PANEL_INSTALL_METHOD="release"
-    output "Will download latest release tarball"
+    output_success "Will download latest release tarball"
   else
     PANEL_INSTALL_METHOD="clone"
-    output "Will clone from Git repository"
+    output_success "Will clone from Git repository"
   fi
 }
 
@@ -145,10 +149,11 @@ configure_installation_method() {
 
 configure_fqdn() {
   print_header
-  print_flame "Domain Configuration"
+  print_section "Domain Configuration" "$GLOBE"
 
-  output "Please enter the domain or subdomain for your panel."
-  output "Example: ${COLOR_ORANGE}panel.example.com${COLOR_NC}"
+  echo ""
+  output_info "Please enter the domain or subdomain for your panel."
+  echo -e "     ${COLOR_GRAY}Example:${COLOR_NC} ${COLOR_ORANGE}panel.example.com${COLOR_NC}"
   echo ""
 
   local valid_fqdn=false
@@ -157,55 +162,55 @@ configure_fqdn() {
 
     if check_fqdn "$PANEL_FQDN"; then
       # Verify DNS resolution
-      output "Verifying DNS for ${PANEL_FQDN}..."
+      output_info "Verifying DNS for ${COLOR_ORANGE}${PANEL_FQDN}${COLOR_NC}..."
       if bash <(curl -sSL "$GITHUB_URL/lib/verify-fqdn.sh") "$PANEL_FQDN"; then
         valid_fqdn=true
       else
         # DNS verification failed and user chose not to continue
-        error "Please fix your DNS configuration or enter a different domain."
+        output_error "Please fix your DNS configuration or enter a different domain."
       fi
     else
-      error "Invalid FQDN format. Must be a valid domain name (not IP address)."
+      output_error "Invalid FQDN format. Must be a valid domain name (not IP address)."
     fi
   done
 
-  output "Domain set to: ${COLOR_ORANGE}${PANEL_FQDN}${COLOR_NC}"
+  output_success "Domain configured: ${COLOR_ORANGE}${PANEL_FQDN}${COLOR_NC}"
 }
 
 # ------------------ SSL Configuration ----------------- #
 
 configure_ssl() {
   print_header
-  print_flame "SSL/TLS Configuration"
+  print_section "SSL/TLS Configuration" "$LOCK"
 
   local use_ssl=""
   bool_input use_ssl "Would you like to use SSL/HTTPS?" "y"
 
   if [ "$use_ssl" == "y" ]; then
     echo ""
-    output "[${COLOR_ORANGE}0${COLOR_NC}] Let's Encrypt (auto-generated, requires domain to point to this server)"
-    output "[${COLOR_ORANGE}1${COLOR_NC}] Use existing SSL certificate"
-    output "[${COLOR_ORANGE}2${COLOR_NC}] No SSL (not recommended for production)"
+    print_menu_item "0" "Let's Encrypt" "auto-generated, requires domain to point to this server"
+    print_menu_item "1" "Use existing SSL certificate" "provide your own certificate files"
+    print_menu_item "2" "No SSL" "not recommended for production"
     echo ""
 
     local ssl_choice=""
     while [[ "$ssl_choice" != "0" && "$ssl_choice" != "1" && "$ssl_choice" != "2" ]]; do
-      echo -n "* Select [0-2]: "
+      echo -ne "  ${COLOR_GOLD}${ARROW_RIGHT}${COLOR_NC} ${COLOR_WHITE}Select [0-2]:${COLOR_NC} "
       read -r ssl_choice
     done
 
     case "$ssl_choice" in
       0)
         CONFIGURE_LETSENCRYPT=true
-        output "Will use Let's Encrypt for SSL"
+        output_success "Will use Let's Encrypt for SSL"
         ;;
       1)
         required_input SSL_CERT_PATH "Path to SSL certificate: " "Path is required"
         required_input SSL_KEY_PATH "Path to SSL key: " "Path is required"
-        output "Will use existing SSL certificate"
+        output_success "Will use existing SSL certificate"
         ;;
       2)
-        output "SSL will not be configured"
+        output_warning "SSL will not be configured"
         ;;
     esac
   fi
@@ -215,7 +220,7 @@ configure_ssl() {
 
 configure_database() {
   print_header
-  print_flame "Database Configuration"
+  print_section "Database Configuration" "$DATABASE"
 
   local use_local_db=""
   bool_input use_local_db "Use local database?" "y"
@@ -225,30 +230,36 @@ configure_database() {
     required_input DB_PORT "Database port [3306]: " "" "3306"
   fi
 
+  echo ""
+  output_info "Database credentials:"
   required_input DB_NAME "Database name [panel]: " "" "panel"
   required_input DB_USER "Database username [pyrodactyl]: " "" "pyrodactyl"
   password_input DB_PASSWORD "Database password: " "Password cannot be empty"
+  output_success "Database configuration complete"
 }
 
 # ------------------ Timezone Configuration ----------------- #
 
 configure_timezone() {
   print_header
-  print_flame "Timezone Configuration"
+  print_section "Timezone Configuration"
 
-  output "Available timezones can be found at:"
-  output "$(hyperlink "https://www.php.net/manual/en/timezones.php")"
+  output_info "Available timezones can be found at:"
+  echo -e "     ${COLOR_CYAN}$(hyperlink "https://www.php.net/manual/en/timezones.php")${COLOR_NC}"
   echo ""
 
   required_input PANEL_TIMEZONE "Timezone [UTC]: " "" "UTC"
-  output "Timezone set to: ${PANEL_TIMEZONE}"
+  print_kv "Timezone" "${PANEL_TIMEZONE}"
 }
 
 # ------------------ Admin Account ----------------- #
 
 configure_admin_account() {
   print_header
-  print_flame "Admin Account Configuration"
+  print_section "Admin Account Configuration" "$PACKAGE"
+
+  output_info "Create your administrator account:"
+  echo ""
 
   email_input PANEL_ADMIN_EMAIL "Admin email: " "Invalid email address"
   required_input PANEL_ADMIN_USERNAME "Admin username: " "Username is required"
@@ -264,8 +275,9 @@ configure_admin_account() {
 
     if [ "$PANEL_ADMIN_PASSWORD" == "$password_confirm" ]; then
       password_match=true
+      output_success "Password confirmed"
     else
-      error "Passwords do not match. Please try again."
+      output_error "Passwords do not match. Please try again."
     fi
   done
 }
@@ -274,16 +286,16 @@ configure_admin_account() {
 
 configure_auto_updater() {
   print_header
-  print_flame "Auto-Updater Configuration"
+  print_section "Auto-Updater Configuration" "$GEAR"
 
   local install_auto_update=""
   bool_input install_auto_update "Install auto-updater for the panel?" "y"
 
   if [ "$install_auto_update" == "y" ]; then
     INSTALL_AUTO_UPDATER=true
-    output "Auto-updater will be installed"
+    output_success "Auto-updater will be installed"
   else
-    output "Auto-updater will not be installed"
+    output_info "Auto-updater will not be installed"
   fi
 }
 
@@ -291,7 +303,7 @@ configure_auto_updater() {
 
 configure_firewall() {
   print_header
-  print_flame "Firewall Configuration"
+  print_section "Firewall Configuration"
 
   ask_firewall CONFIGURE_FIREWALL
 }
@@ -300,26 +312,41 @@ configure_firewall() {
 
 show_summary() {
   print_header
-  print_flame "Installation Summary"
+  print_section "Installation Summary" "$DIAMOND"
 
-  output "Please review the following configuration:"
+  output_highlight "Please review the following configuration:"
   echo ""
-  echo -e "  ${COLOR_ORANGE}Repository:${COLOR_NC}        ${PANEL_REPO} $([ "$PANEL_REPO_PRIVATE" == "true" ] && echo '(private)' || echo '(public)')"
-  echo -e "  ${COLOR_ORANGE}Install Method:${COLOR_NC}    ${PANEL_INSTALL_METHOD}"
-  echo -e "  ${COLOR_ORANGE}Domain:${COLOR_NC}            ${PANEL_FQDN}"
-  echo -e "  ${COLOR_ORANGE}SSL:${COLOR_NC}               $([ "$CONFIGURE_LETSENCRYPT" == "true" ] && echo 'Let'\''s Encrypt' || ([ -n "$SSL_CERT_PATH" ] && echo 'Custom' || echo 'None'))"
-  echo -e "  ${COLOR_ORANGE}Database:${COLOR_NC}          ${DB_NAME}@${DB_HOST}:${DB_PORT}"
-  echo -e "  ${COLOR_ORANGE}Timezone:${COLOR_NC}          ${PANEL_TIMEZONE}"
-  echo -e "  ${COLOR_ORANGE}Admin Email:${COLOR_NC}       ${PANEL_ADMIN_EMAIL}"
-  echo -e "  ${COLOR_ORANGE}Auto-Updater:${COLOR_NC}      $([ "$INSTALL_AUTO_UPDATER" == "true" ] && echo 'Yes' || echo 'No')"
-  echo -e "  ${COLOR_ORANGE}Firewall:${COLOR_NC}          $([ "$CONFIGURE_FIREWALL" == "true" ] && echo 'Yes' || echo 'No')"
+
+  # Summary box
+  echo -e "  ${COLOR_FIRE_ORANGE}╭────────────────────────────────────────────────────────────────────╮${COLOR_NC}"
+
+  local ssl_type
+  if [ "$CONFIGURE_LETSENCRYPT" == "true" ]; then
+    ssl_type="Let's Encrypt"
+  elif [ -n "$SSL_CERT_PATH" ]; then
+    ssl_type="Custom Certificate"
+  else
+    ssl_type="None"
+  fi
+
+  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\\n" "Repository:" "${PANEL_REPO} $([ "$PANEL_REPO_PRIVATE" == "true" ] && echo '(private)' || echo '(public)')"
+  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\\n" "Install Method:" "${PANEL_INSTALL_METHOD}"
+  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\\n" "Domain:" "${PANEL_FQDN}"
+  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\\n" "SSL:" "${ssl_type}"
+  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\\n" "Database:" "${DB_NAME}@${DB_HOST}:${DB_PORT}"
+  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\\n" "Timezone:" "${PANEL_TIMEZONE}"
+  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\\n" "Admin Email:" "${PANEL_ADMIN_EMAIL}"
+  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\\n" "Auto-Updater:" "$([ "$INSTALL_AUTO_UPDATER" == "true" ] && echo "${COLOR_LIME}Yes${COLOR_NC}" || echo "${COLOR_GRAY}No${COLOR_NC}")"
+  printf "  ${COLOR_FIRE_ORANGE}│${COLOR_NC}  ${COLOR_GOLD}%-18s${COLOR_NC} ${COLOR_WHITE}%-48s${COLOR_FIRE_ORANGE}│${COLOR_NC}\\n" "Firewall:" "$([ "$CONFIGURE_FIREWALL" == "true" ] && echo "${COLOR_LIME}Yes${COLOR_NC}" || echo "${COLOR_GRAY}No${COLOR_NC}")"
+
+  echo -e "  ${COLOR_FIRE_ORANGE}╰────────────────────────────────────────────────────────────────────╯${COLOR_NC}"
   echo ""
 
   local confirm=""
   bool_input confirm "Proceed with installation?" "y"
 
   if [ "$confirm" != "y" ]; then
-    error "Installation aborted"
+    output_error "Installation aborted"
     exit 1
   fi
 }
@@ -353,22 +380,56 @@ export_variables() {
 # ------------------ Main ----------------- #
 
 main() {
-  print_flame "Welcome to the Pyrodactyl Panel Installer"
+  print_header
+  print_section "Welcome to the Pyrodactyl Panel Installer" "$FIRE"
 
+  # Show progress steps
+  local total_steps=9
+  local current_step=0
+
+  ((current_step++))
+  print_step $current_step $total_steps "Configuring Repository"
   configure_github_repository
+
+  ((current_step++))
+  print_step $current_step $total_steps "Selecting Installation Method"
   configure_installation_method
+
+  ((current_step++))
+  print_step $current_step $total_steps "Configuring Domain"
   configure_fqdn
+
+  ((current_step++))
+  print_step $current_step $total_steps "Configuring SSL/TLS"
   configure_ssl
+
+  ((current_step++))
+  print_step $current_step $total_steps "Configuring Database"
   configure_database
+
+  ((current_step++))
+  print_step $current_step $total_steps "Setting Timezone"
   configure_timezone
+
+  ((current_step++))
+  print_step $current_step $total_steps "Creating Admin Account"
   configure_admin_account
+
+  ((current_step++))
+  print_step $current_step $total_steps "Configuring Auto-Updater"
   configure_auto_updater
+
+  ((current_step++))
+  print_step $current_step $total_steps "Configuring Firewall"
   configure_firewall
+
   show_summary
 
   export_variables
 
-  output "Starting installation..."
+  echo ""
+  output_info "Starting installation..."
+  echo ""
   run_installer "panel"
 }
 
